@@ -11,7 +11,7 @@ export default createRouter({
     { path: '/', component: OverviewView, meta: { title: '项目总览' } },
     { path: '/devices', component: DevicesView, meta: { title: '设备与分区' } },
     { path: '/matrix', component: MatrixView, meta: { title: '因果矩阵' } },
-    { path: '/dependency', component: DependencyView, meta: { title: '依赖图' } },
-    { path: '/review', component: ReviewView, meta: { title: '版本审阅' } },
+    { path: '/dependency', component: DependencyView, meta: { title: '依赖路径（失效重算）' } },
+    { path: '/review', component: ReviewView, meta: { title: '冲突 · 验收 · 签字' } },
   ],
 })

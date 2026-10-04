@@ -12,8 +12,8 @@ const items = [
   { to: '/', title: '项目总览', icon: 'mdi-view-dashboard-outline' },
   { to: '/devices', title: '设备与分区', icon: 'mdi-access-point' },
   { to: '/matrix', title: '因果矩阵', icon: 'mdi-grid-large' },
-  { to: '/dependency', title: '依赖图', icon: 'mdi-graph-outline' },
-  { to: '/review', title: '版本审阅', icon: 'mdi-file-compare' },
+  { to: '/dependency', title: '依赖路径', icon: 'mdi-graph-outline' },
+  { to: '/review', title: '冲突·验收·签字', icon: 'mdi-file-compare' },
 ]
 </script>
 
@@ -29,8 +29,9 @@ const items = [
       </v-list>
       <template #append>
         <div class="side-status">
-          <div><span class="status-dot" :class="{ locked: store.locked }" />{{ store.locked ? '基线已签字锁定' : '协同编辑中' }}</div>
-          <small>版本 R{{ store.revision }} · {{ store.validations.length }} 项校验提示</small>
+          <div class="ticket"><v-icon icon="mdi-clipboard-text-clock-outline" size="14" /><span class="mono">{{ store.ticketId }}</span></div>
+          <div><span class="status-dot" :class="{ locked: store.locked, fault: !!store.pendingWrite }" />{{ store.pendingWrite ? '写入挂起待恢复' : store.locked ? '基线已签字锁定' : '现场/值班室协同中' }}</div>
+          <small>版本 R{{ store.revision }} · {{ store.validations.length }} 项校验 · {{ store.openConflictList.length }} 条待处理冲突</small>
         </div>
       </template>
     </v-navigation-drawer>
@@ -39,7 +40,9 @@ const items = [
       <v-app-bar-nav-icon class="d-md-none" @click="drawer = !drawer" />
       <v-app-bar-title>{{ title }}</v-app-bar-title>
       <v-spacer />
-      <v-chip size="small" variant="tonal" color="success" prepend-icon="mdi-cloud-check-outline">草稿自动保存</v-chip>
+      <v-chip v-if="store.pendingWrite" size="small" color="error" variant="tonal" prepend-icon="mdi-sync-alert">写入失败 · 按单号恢复</v-chip>
+      <v-chip v-else-if="store.openConflictList.length" size="small" color="warning" variant="tonal" prepend-icon="mdi-call-merge">{{ store.openConflictList.length }} 条冲突待处理</v-chip>
+      <v-chip v-else size="small" variant="tonal" color="success" prepend-icon="mdi-cloud-check-outline">草稿已保存</v-chip>
     </v-app-bar>
 
     <v-main>
@@ -61,5 +64,8 @@ const items = [
 .side-status small { display: block; margin-top: 6px; color: #93a7ad; font-size: 9px; }
 .status-dot { display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; background: #59b58a; }
 .status-dot.locked { background: #d79a45; }
+.status-dot.fault { background: #e0604a; }
+.ticket { display: flex; align-items: center; gap: 5px; margin-bottom: 8px; font-size: 11px; color: #f0a391; }
+.ticket .mono { letter-spacing: .03em; }
 .app-bar { border-bottom: 1px solid #e0e5e5; background: white; }
 </style>

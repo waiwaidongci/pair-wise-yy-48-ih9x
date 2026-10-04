@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 62048",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview --host 0.0.0.0 --port 62048"
+    "preview": "vite preview --host 0.0.0.0 --port 62048",
+    "verify": "esbuild scripts/verify-domain.ts --bundle --platform=node --format=esm --outfile=scripts/.verify-domain.mjs --log-level=warning && node scripts/.verify-domain.mjs; status=$?; rm -f scripts/.verify-domain.mjs; exit $status"
   },
   "dependencies": {
     "@apollo/client": "^3.14.0",
