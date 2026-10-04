@@ -11,6 +11,12 @@ const types: DeviceType[] = ['感烟探测器', '感温探测器', '手动报警
 
 const filtered = computed(() => store.devices.filter((item) => (floor.value === '全部' || item.floor === floor.value) && `${item.id}${item.name}${item.address}`.includes(query.value)))
 
+const zoneOptions = ['A 区', 'B 区', 'C 区', '中庭', '设备机房', '地下车库']
+
+function changeZone(device: Device, zone: string) {
+  if (zone && zone !== device.zone) store.updateDeviceZone(device.id, zone)
+}
+
 function addDevice() {
   if (!form.value.id || !form.value.name || !form.value.address) return
   store.devices.push({ ...form.value })
@@ -41,7 +47,18 @@ function addDevice() {
             <td class="mono">{{ device.id }}</td>
             <td><strong>{{ device.name }}</strong></td>
             <td><v-chip size="small" variant="outlined">{{ device.type }}</v-chip></td>
-            <td>{{ device.floor }} / {{ device.zone }}</td>
+            <td>{{ device.floor }} /
+              <v-select
+                :model-value="device.zone"
+                :items="zoneOptions"
+                density="compact"
+                hide-details
+                variant="underlined"
+                style="max-width:130px; display:inline-block"
+                :disabled="store.locked"
+                @update:model-value="(v) => changeZone(device, String(v))"
+              />
+            </td>
             <td class="mono">{{ device.address }}</td>
             <td>{{ store.rules.filter((rule) => rule.triggerId === device.id || rule.actionId === device.id).length }} 条</td>
             <td><v-chip size="small" color="success" variant="tonal">在线</v-chip></td>
